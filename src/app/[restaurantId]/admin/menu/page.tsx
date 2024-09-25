@@ -69,8 +69,10 @@ interface FormData {
   healthScore: number
   showHealthScore: string
 }
-function MenuItemForm() {
+function MenuItemForm({...props}) {
   const [previewImages, setPreviewImages] = useState<string[]>([])
+  const [editItems, setEditItems]= useState<any>({})
+
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<FormData>()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -102,15 +104,24 @@ function MenuItemForm() {
   const watchAutoCalculatePrice = watch('autoCalculatePrice')
 
   useEffect(() => {
+    if(props.formData){
+      setEditItems({...props.formData});
+    }
     if (watchAutoCalculatePrice === 'yes' && watchMarkedPrice && watchDiscount) {
       const discountedPrice = watchMarkedPrice - (watchMarkedPrice * (watchDiscount / 100))
       setValue('sellingPrice', Number(discountedPrice.toFixed(2)))
     }
-  }, [watchMarkedPrice, watchDiscount, watchAutoCalculatePrice, setValue])
+  }, [watchMarkedPrice, watchDiscount, watchAutoCalculatePrice, setValue, props.formData])
 
   const onSubmit = (data: FormData) => {
     console.log(data)
     // Here you would typically send the data to your backend
+  }
+  const onChangeEditItems = (key: string, value: string) => {
+    setEditItems({
+      ...editItems,
+      [key]: value
+    })
   }
 
   return (
@@ -153,7 +164,7 @@ function MenuItemForm() {
         <div className="space-y-4">
           <div>
             <Label htmlFor="name">Name of the food item</Label>
-            <Input id="name" {...register('name', { required: 'Name is required' })} className="mt-1" />
+            <Input id="name" {...register('name', { required: 'Name is required' })} className="mt-1" value={editItems?.name} onChange={(e) => onChangeEditItems('name', e.target.value)} />
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
           </div>
 
@@ -164,7 +175,7 @@ function MenuItemForm() {
               control={control}
               rules={{ required: 'Primary category is required' }}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={editItems?.primaryCategory || field.value} value={editItems?.primaryCategory || field.value}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select primary category" />
                   </SelectTrigger>
@@ -187,7 +198,7 @@ function MenuItemForm() {
               control={control}
               rules={{ required: 'Secondary category is required' }}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={editItems?.secondaryCategory || field.onChange} defaultValue={field.value} value={editItems?.secondaryCategory || field.value} >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select secondary category" />
                   </SelectTrigger>
@@ -210,7 +221,7 @@ function MenuItemForm() {
               control={control}
               rules={{ required: 'Cuisine type is required' }}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={editItems?.cuisineType || field.value} value={editItems?.cuisineType || field.value}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select cuisine type" />
                   </SelectTrigger>
@@ -231,7 +242,7 @@ function MenuItemForm() {
               control={control}
               rules={{ required: 'Availability is required' }}
               render={({ field }) => (
-                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex space-x-4 mt-2">
+                <RadioGroup onValueChange={field.onChange} defaultValue={editItems?.available ? 'yes': 'no' || field.value} value={editItems?.available ? 'yes': 'no' || field.value} className="flex space-x-4 mt-2">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="available-yes" />
                     <Label htmlFor="available-yes">Yes</Label>
@@ -250,7 +261,7 @@ function MenuItemForm() {
         <div className="space-y-4">
           <div>
             <Label htmlFor="description">Description</Label>
-            <Textarea id="description" {...register('description', { required: 'Description is required' })} className="mt-1" />
+            <Textarea id="description" {...register('description', { required: 'Description is required' })} className="mt-1" value={editItems?.description} onChange={(e) => onChangeEditItems('description', e.target.value)}/>
             {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
           </div>
 
@@ -262,7 +273,7 @@ function MenuItemForm() {
                 type="number"
                 step="0.01"
                 {...register('markedPrice', { required: 'Marked price is required', min: 0 })}
-                className="mt-1"
+                className="mt-1" value={editItems?.markedPrice} onChange={(e) => onChangeEditItems('markedPrice', e.target.value)}
               />
               {errors.markedPrice && <p className="text-red-500 text-sm mt-1">{errors.markedPrice.message}</p>}
             </div>
@@ -274,7 +285,7 @@ function MenuItemForm() {
                 type="number"
                 step="0.1"
                 {...register('discount', { required: 'Discount is required', min: 0, max: 100 })}
-                className="mt-1"
+                className="mt-1" value={editItems?.discount} onChange={(e) => onChangeEditItems('discount', e.target.value)}
               />
               {errors.discount && <p className="text-red-500 text-sm mt-1">{errors.discount.message}</p>}
             </div>
@@ -310,7 +321,7 @@ function MenuItemForm() {
               step="0.01"
               {...register('sellingPrice', { required: 'Selling price is required', min: 0 })}
               readOnly={watchAutoCalculatePrice === 'yes'}
-              className="mt-1"
+              className="mt-1" value={editItems?.sellingPrice}
             />
             {errors.sellingPrice && <p className="text-red-500 text-sm mt-1">{errors.sellingPrice.message}</p>}
           </div>
@@ -322,7 +333,7 @@ function MenuItemForm() {
                 id="calories"
                 type="number"
                 {...register('calories', { required: 'Calories are required', min: 0 })}
-                className="mt-1"
+                className="mt-1" value={editItems?.calories}
               />
               {errors.calories && <p className="text-red-500 text-sm mt-1">{errors.calories.message}</p>}
             </div>
@@ -333,7 +344,7 @@ function MenuItemForm() {
                 id="healthScore"
                 type="number"
                 {...register('healthScore', { required: 'Health score is required', min: 0, max: 10 })}
-                className="mt-1"
+                className="mt-1" value={editItems?.healthScore}
               />
               {errors.healthScore && <p className="text-red-500 text-sm mt-1">{errors.healthScore.message}</p>}
             </div>
@@ -346,7 +357,7 @@ function MenuItemForm() {
               control={control}
               rules={{ required: 'This field is required' }}
               render={({ field }) => (
-                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex space-x-4 mt-2">
+                <RadioGroup onValueChange={field.onChange} className="flex space-x-4 mt-2" value={editItems?.showHealthScore ? 'yes': 'no' || field.value}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="show-health-score-yes" />
                     <Label htmlFor="show-health-score-yes">Yes</Label>
@@ -369,7 +380,59 @@ function MenuItemForm() {
 }
 
 
-const AddMenuItemModal = () => {
+export const AddMenuItemModal = ({...props}) => {
+
+  // temperary added this state to test the modal
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([
+    {
+      id: "0",
+      name: "Veggie Supreme Pizza",
+      images: [
+        "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      ],
+      markedPrice: 280,
+      sellingPrice: 260,
+      available: true,
+      calories: 250,
+      description:
+        "This is a pretty good pizza with this many toppings fuck description This is a pretty good pizza with this many toppings fuck descriptionThis is a pretty good pizza with this many toppings fuck descriptionThis is a pretty good pizza with this many toppings fuck description",
+      healthScore: 8,
+      showHealthScore: false,
+      rating: 4.5,
+      restaurantId: "32",
+      primaryCategory: "fast-food",
+      secondaryCategory: "pizza",
+      cuisineType: "veg",
+      orders: 100,
+      reviewSummary: "yeah good",
+      discount: 10,
+    },
+    {
+      id: "1",
+      name: "Veggie Supreme Pizza",
+      images: [
+        "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      ],
+      markedPrice: 280,
+      sellingPrice: 260,
+      available: true,
+      calories: 250,
+      description:
+        "This is a pretty good pizza with this many toppings fuck description",
+      healthScore: 8,
+      showHealthScore: false,
+      rating: 4.5,
+      restaurantId: "32",
+      primaryCategory: "fast-food",
+      secondaryCategory: "pizza",
+      cuisineType: "veg",
+      orders: 100,
+      reviewSummary: "yeah good",
+      discount: 10,
+    },
+  ]);
   const [formData, setFormData] = useState<Partial<MenuItem>>({
     // id: "",
     images: [],
@@ -389,7 +452,46 @@ const AddMenuItemModal = () => {
     healthScore: 0,
     showHealthScore: false,
   });
-
+  useEffect(() => {
+    if (props.selectedElt) {
+      console.log(menuItems[+props.selectedElt])
+      setFormData({
+        images: menuItems[+props.selectedElt].images,
+        name: menuItems[+props.selectedElt].name,
+        primaryCategory:  menuItems[+props.selectedElt].primaryCategory,
+        secondaryCategory:  menuItems[+props.selectedElt].secondaryCategory,
+        cuisineType:  menuItems[+props.selectedElt].cuisineType,
+        orders:  menuItems[+props.selectedElt].orders,
+        available:  menuItems[+props.selectedElt].available,
+        description:  menuItems[+props.selectedElt].description,
+        reviewSummary:  menuItems[+props.selectedElt].reviewSummary,
+        markedPrice:  menuItems[+props.selectedElt].markedPrice,
+        sellingPrice:  menuItems[+props.selectedElt].sellingPrice,
+        discount:  menuItems[+props.selectedElt].discount,
+        calories:  menuItems[+props.selectedElt].calories,
+        healthScore:  menuItems[+props.selectedElt].healthScore,
+        showHealthScore:  menuItems[+props.selectedElt].showHealthScore,
+      })
+    } else {
+      setFormData({
+        images: [],
+        name: "",
+        primaryCategory: "",
+        secondaryCategory: "",
+        cuisineType: "",
+        orders: 0,
+        available: false,
+        description: "",
+        reviewSummary: "",
+        markedPrice: 0,
+        sellingPrice: 0,
+        discount: 0,
+        calories: 0,
+        healthScore: 0,
+        showHealthScore: false,
+      })
+    }
+  }, [props.selectedElt]);
   const handleChange = (e: ChangeEvent) => {
   }
   return (
@@ -400,7 +502,7 @@ const AddMenuItemModal = () => {
           Add a new menu item by entering all the required values.
         </DialogDescription>
       </DialogHeader>
-      <MenuItemForm/>
+      <MenuItemForm formData ={formData}/>
     </DialogContent>
   );
 };

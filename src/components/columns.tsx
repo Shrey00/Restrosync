@@ -3,7 +3,6 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious,CarouselNext } from "./ui/carousel";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu";
-import { Button } from './ui/button';
 import { MoreVertical, InfoIcon } from "lucide-react";
 import {
   Tooltip,
@@ -14,6 +13,13 @@ import {
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 import {MenuItem} from '@/types';
+import {
+  Dialog,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { AddMenuItemModal } from "@/app/[restaurantId]/admin/menu/page";
+import { Button } from "./ui/button";
+import { useState } from "react";
 //images, name, cuisineType,discount,Price before discountl,Price after discount,Orders,Available, Calories, Health Score, Rating
 
 export const columns: ColumnDef<MenuItem>[] = [
@@ -125,6 +131,11 @@ export const columns: ColumnDef<MenuItem>[] = [
   {
     header: "Actions",
     cell: ({ row }) => {
+      const [selecteRow, setSelectedRow]= useState<string | null>(null);
+      const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        const buttonId: string = e.currentTarget.id;
+        setSelectedRow(buttonId);
+      };
       return  <div className="flex items-center">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -133,8 +144,13 @@ export const columns: ColumnDef<MenuItem>[] = [
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>
-              Edit
+          <DropdownMenuItem asChild>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button  id={row.id} className="hello w-full" onClick={(e) => handleClick(e)}>Edit</Button>
+              </DialogTrigger>
+              <AddMenuItemModal selectedElt={selecteRow} />
+            </Dialog>
           </DropdownMenuItem>
           <DropdownMenuItem>
               Show Reviews
