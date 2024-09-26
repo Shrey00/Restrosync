@@ -110,7 +110,7 @@ function MenuItemForm({...props}) {
     else{
       setEditItems(null);
     }
-    console.log('editItems', editItems)
+    console.log('editItems', editItems?.primaryCategory)
     if (watchAutoCalculatePrice === 'yes' && watchMarkedPrice && watchDiscount) {
       const discountedPrice = watchMarkedPrice - (watchMarkedPrice * (watchDiscount / 100))
       setValue('sellingPrice', Number(discountedPrice.toFixed(2)))
@@ -179,7 +179,7 @@ function MenuItemForm({...props}) {
               control={control}
               rules={{ required: 'Primary category is required' }}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} defaultValue={editItems?.primaryCategory || field.value} value={editItems?.primaryCategory || field.value}
+                <Select onValueChange={field.onChange} value={field.value || editItems?.primaryCategory}
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select primary category" />
@@ -193,6 +193,7 @@ function MenuItemForm({...props}) {
                 </Select>
               )}
             />
+
             {errors.primaryCategory && <p className="text-red-500 text-sm mt-1">{errors.primaryCategory.message}</p>}
           </div>
 
@@ -203,7 +204,7 @@ function MenuItemForm({...props}) {
               control={control}
               rules={{ required: 'Secondary category is required' }}
               render={({ field }) => (
-                <Select onValueChange={editItems?.secondaryCategory || field.onChange} defaultValue={field.value} value={editItems?.secondaryCategory || field.value} >
+                <Select onValueChange={field.onChange} value={field.value || editItems?.secondaryCategory} >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select secondary category" />
                   </SelectTrigger>
@@ -226,7 +227,7 @@ function MenuItemForm({...props}) {
               control={control}
               rules={{ required: 'Cuisine type is required' }}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} defaultValue={editItems?.cuisineType || field.value} value={editItems?.cuisineType || field.value}>
+                <Select onValueChange={field.onChange} value={field.value || editItems?.cuisineType} >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select cuisine type" />
                   </SelectTrigger>
@@ -247,7 +248,7 @@ function MenuItemForm({...props}) {
               control={control}
               rules={{ required: 'Availability is required' }}
               render={({ field }) => (
-                <RadioGroup onValueChange={field.onChange} value={editItems?.available != null ?(editItems?.available ? 'yes': 'no') : field.value} className="flex space-x-4 mt-2">
+                <RadioGroup onValueChange={field.onChange} value={field.value || (editItems?.available != null ? (editItems?.available ? 'yes' : 'no') : '')} className="flex space-x-4 mt-2">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="available-yes" />
                     <Label htmlFor="available-yes">Yes</Label>
@@ -362,7 +363,7 @@ function MenuItemForm({...props}) {
               control={control}
               rules={{ required: 'This field is required' }}
               render={({ field }) => (
-                <RadioGroup onValueChange={field.onChange} className="flex space-x-4 mt-2" value={editItems?.showHealthScore !=null ? (editItems?.showHealthScore ? 'yes': 'no' ): field.value}>
+                <RadioGroup onValueChange={field.onChange} className="flex space-x-4 mt-2" value={field.value || (editItems?.showHealthScore !=null ? (editItems?.showHealthScore ? 'yes': 'no' ): '')}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="show-health-score-yes" />
                     <Label htmlFor="show-health-score-yes">Yes</Label>
