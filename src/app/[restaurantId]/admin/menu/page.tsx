@@ -460,7 +460,6 @@ export const AddMenuItemModal = ({...props}) => {
   });
   useEffect(() => {
     if (props.selectedElt) {
-      console.log(menuItems[+props.selectedElt])
       setFormData({
         images: menuItems[+props.selectedElt].images,
         name: menuItems[+props.selectedElt].name,
