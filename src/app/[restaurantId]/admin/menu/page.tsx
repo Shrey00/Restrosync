@@ -71,7 +71,7 @@ interface FormData {
 }
 function MenuItemForm({...props}) {
   const [previewImages, setPreviewImages] = useState<string[]>([])
-  const [editItems, setEditItems]= useState<any>({})
+  const [editItems, setEditItems]= useState<any | null>(null)
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<FormData>()
 
@@ -107,6 +107,10 @@ function MenuItemForm({...props}) {
     if(props.formData){
       setEditItems({...props.formData});
     }
+    else{
+      setEditItems(null);
+    }
+    console.log('editItems', editItems)
     if (watchAutoCalculatePrice === 'yes' && watchMarkedPrice && watchDiscount) {
       const discountedPrice = watchMarkedPrice - (watchMarkedPrice * (watchDiscount / 100))
       setValue('sellingPrice', Number(discountedPrice.toFixed(2)))
@@ -175,7 +179,8 @@ function MenuItemForm({...props}) {
               control={control}
               rules={{ required: 'Primary category is required' }}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} defaultValue={editItems?.primaryCategory || field.value} value={editItems?.primaryCategory || field.value}>
+                <Select onValueChange={field.onChange} defaultValue={editItems?.primaryCategory || field.value} value={editItems?.primaryCategory || field.value}
+                >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select primary category" />
                   </SelectTrigger>
@@ -242,7 +247,7 @@ function MenuItemForm({...props}) {
               control={control}
               rules={{ required: 'Availability is required' }}
               render={({ field }) => (
-                <RadioGroup onValueChange={field.onChange} defaultValue={editItems?.available ? 'yes': 'no' || field.value} value={editItems?.available ? 'yes': 'no' || field.value} className="flex space-x-4 mt-2">
+                <RadioGroup onValueChange={field.onChange} value={editItems?.available != null ?(editItems?.available ? 'yes': 'no') : field.value} className="flex space-x-4 mt-2">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="available-yes" />
                     <Label htmlFor="available-yes">Yes</Label>
@@ -298,7 +303,7 @@ function MenuItemForm({...props}) {
               control={control}
               rules={{ required: 'This field is required' }}
               render={({ field }) => (
-                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex space-x-4 mt-2">
+                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex space-x-4 mt-2" >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="auto-calculate-yes" />
                     <Label htmlFor="auto-calculate-yes">Yes</Label>
@@ -321,7 +326,7 @@ function MenuItemForm({...props}) {
               step="0.01"
               {...register('sellingPrice', { required: 'Selling price is required', min: 0 })}
               readOnly={watchAutoCalculatePrice === 'yes'}
-              className="mt-1" value={editItems?.sellingPrice}
+              className="mt-1" value={editItems?.sellingPrice} onChange={(e) => onChangeEditItems('sellingPrice', e.target.value)}
             />
             {errors.sellingPrice && <p className="text-red-500 text-sm mt-1">{errors.sellingPrice.message}</p>}
           </div>
@@ -333,7 +338,7 @@ function MenuItemForm({...props}) {
                 id="calories"
                 type="number"
                 {...register('calories', { required: 'Calories are required', min: 0 })}
-                className="mt-1" value={editItems?.calories}
+                className="mt-1" value={editItems?.calories} onChange={(e) => onChangeEditItems('calories', e.target.value)}
               />
               {errors.calories && <p className="text-red-500 text-sm mt-1">{errors.calories.message}</p>}
             </div>
@@ -344,7 +349,7 @@ function MenuItemForm({...props}) {
                 id="healthScore"
                 type="number"
                 {...register('healthScore', { required: 'Health score is required', min: 0, max: 10 })}
-                className="mt-1" value={editItems?.healthScore}
+                className="mt-1" value={editItems?.healthScore} onChange={(e) => onChangeEditItems('healthScore', e.target.value)}
               />
               {errors.healthScore && <p className="text-red-500 text-sm mt-1">{errors.healthScore.message}</p>}
             </div>
@@ -357,7 +362,7 @@ function MenuItemForm({...props}) {
               control={control}
               rules={{ required: 'This field is required' }}
               render={({ field }) => (
-                <RadioGroup onValueChange={field.onChange} className="flex space-x-4 mt-2" value={editItems?.showHealthScore ? 'yes': 'no' || field.value}>
+                <RadioGroup onValueChange={field.onChange} className="flex space-x-4 mt-2" value={editItems?.showHealthScore !=null ? (editItems?.showHealthScore ? 'yes': 'no' ): field.value}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="show-health-score-yes" />
                     <Label htmlFor="show-health-score-yes">Yes</Label>
@@ -393,7 +398,7 @@ export const AddMenuItemModal = ({...props}) => {
       ],
       markedPrice: 280,
       sellingPrice: 260,
-      available: true,
+      available: false,
       calories: 250,
       description:
         "This is a pretty good pizza with this many toppings fuck description This is a pretty good pizza with this many toppings fuck descriptionThis is a pretty good pizza with this many toppings fuck descriptionThis is a pretty good pizza with this many toppings fuck description",
@@ -517,7 +522,7 @@ export default function MenuItemsTable() {
       ],
       markedPrice: 280,
       sellingPrice: 260,
-      available: true,
+      available: false,
       calories: 250,
       description:
         "This is a pretty good pizza with this many toppings fuck description This is a pretty good pizza with this many toppings fuck descriptionThis is a pretty good pizza with this many toppings fuck descriptionThis is a pretty good pizza with this many toppings fuck description",
