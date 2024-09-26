@@ -389,56 +389,7 @@ function MenuItemForm({...props}) {
 export const AddMenuItemModal = ({...props}) => {
 
   // temperary added this state to test the modal
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([
-    {
-      id: "0",
-      name: "Veggie Supreme Pizza",
-      images: [
-        "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        "https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      ],
-      markedPrice: 280,
-      sellingPrice: 260,
-      available: false,
-      calories: 250,
-      description:
-        "This is a pretty good pizza with this many toppings fuck description This is a pretty good pizza with this many toppings fuck descriptionThis is a pretty good pizza with this many toppings fuck descriptionThis is a pretty good pizza with this many toppings fuck description",
-      healthScore: 8,
-      showHealthScore: false,
-      rating: 4.5,
-      restaurantId: "32",
-      primaryCategory: "fast-food",
-      secondaryCategory: "pizza",
-      cuisineType: "veg",
-      orders: 100,
-      reviewSummary: "yeah good",
-      discount: 10,
-    },
-    {
-      id: "1",
-      name: "Veggie Supreme Pizza",
-      images: [
-        "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        "https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      ],
-      markedPrice: 280,
-      sellingPrice: 260,
-      available: true,
-      calories: 250,
-      description:
-        "This is a pretty good pizza with this many toppings fuck description",
-      healthScore: 8,
-      showHealthScore: false,
-      rating: 4.5,
-      restaurantId: "32",
-      primaryCategory: "fast-food",
-      secondaryCategory: "pizza",
-      cuisineType: "veg",
-      orders: 100,
-      reviewSummary: "yeah good",
-      discount: 10,
-    },
-  ]);
+
   const [formData, setFormData] = useState<Partial<MenuItem>>({
     // id: "",
     images: [],
@@ -460,23 +411,7 @@ export const AddMenuItemModal = ({...props}) => {
   });
   useEffect(() => {
     if (props.selectedElt) {
-      setFormData({
-        images: menuItems[+props.selectedElt].images,
-        name: menuItems[+props.selectedElt].name,
-        primaryCategory:  menuItems[+props.selectedElt].primaryCategory,
-        secondaryCategory:  menuItems[+props.selectedElt].secondaryCategory,
-        cuisineType:  menuItems[+props.selectedElt].cuisineType,
-        orders:  menuItems[+props.selectedElt].orders,
-        available:  menuItems[+props.selectedElt].available,
-        description:  menuItems[+props.selectedElt].description,
-        reviewSummary:  menuItems[+props.selectedElt].reviewSummary,
-        markedPrice:  menuItems[+props.selectedElt].markedPrice,
-        sellingPrice:  menuItems[+props.selectedElt].sellingPrice,
-        discount:  menuItems[+props.selectedElt].discount,
-        calories:  menuItems[+props.selectedElt].calories,
-        healthScore:  menuItems[+props.selectedElt].healthScore,
-        showHealthScore:  menuItems[+props.selectedElt].showHealthScore,
-      })
+      setFormData(props.selectedElt)
     } else {
       setFormData({
         images: [],

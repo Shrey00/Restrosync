@@ -131,10 +131,25 @@ export const columns: ColumnDef<MenuItem>[] = [
   {
     header: "Actions",
     cell: ({ row }) => {
-      const [selecteRow, setSelectedRow]= useState<string | null>(null);
+      const [formData, setFormData] = useState<Partial<MenuItem>>({
+        images: [],
+        name: "",
+        primaryCategory: "",
+        secondaryCategory: "",
+        cuisineType: "",
+        orders: 0,
+        available: false,
+        description: "",
+        reviewSummary: "",
+        markedPrice: 0,
+        sellingPrice: 0,
+        discount: 0,
+        calories: 0,
+        healthScore: 0,
+        showHealthScore: false,
+      });
       const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const buttonId: string = e.currentTarget.id;
-        setSelectedRow(buttonId);
+        setFormData(row.original)
       };
       return  <div className="flex items-center">
       <DropdownMenu>
@@ -149,7 +164,7 @@ export const columns: ColumnDef<MenuItem>[] = [
               <DialogTrigger asChild>
                 <Button  id={row.id} className="hello w-full" onClick={(e) => handleClick(e)}>Edit</Button>
               </DialogTrigger>
-              <AddMenuItemModal selectedElt={selecteRow} />
+              <AddMenuItemModal selectedElt={formData} />
             </Dialog>
           </DropdownMenuItem>
           <DropdownMenuItem>
