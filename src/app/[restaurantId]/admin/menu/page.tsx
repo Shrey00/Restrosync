@@ -110,7 +110,6 @@ function MenuItemForm({...props}) {
     else{
       setEditItems(null);
     }
-    console.log('editItems', editItems?.primaryCategory)
     if (watchAutoCalculatePrice === 'yes' && watchMarkedPrice && watchDiscount) {
       const discountedPrice = watchMarkedPrice - (watchMarkedPrice * (watchDiscount / 100))
       setValue('sellingPrice', Number(discountedPrice.toFixed(2)))
@@ -145,7 +144,7 @@ function MenuItemForm({...props}) {
               </p>
             </div>
             {errors.images && <p className="text-red-500 text-sm mt-1">{errors.images.message}</p>}
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className={`flex flex-wrap gap-2 ${previewImages.length && "mt-4"}`}>
               {previewImages.map((image, index) => (
                 <div key={index} className="relative">
                   <img src={image} alt={`Preview ${index + 1}`} className="w-20 h-20 object-cover rounded" />
